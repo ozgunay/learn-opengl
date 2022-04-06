@@ -1,3 +1,5 @@
+#include <Magnum/Magnum.h>
+#include <Magnum/Math/Color.h>
 #include <Magnum/GL/DefaultFramebuffer.h>
 #include <Magnum/GL/Version.h>
 #include <Magnum/Platform/GlfwApplication.h>
@@ -15,13 +17,15 @@ class MyApplication: public Platform::Application {
 MyApplication::MyApplication(const Arguments& arguments):
     Platform::Application{ arguments, Configuration{}
         .setTitle("Learn-OpenGL with Magnum Engine")
-        .setWindowFlags(Configuration::WindowFlag::Resizable),
+        .setWindowFlags(Configuration::WindowFlag::Resizable)
+        .setSize({800, 600}),
     GLConfiguration{}.setVersion(GL::Version::GL330) } {
     /* TODO: Add your initialization code here */
 }
 
 void MyApplication::drawEvent() {
-    GL::defaultFramebuffer.clear(GL::FramebufferClear::Color);
+    Magnum::Color4 deneme{};
+    GL::defaultFramebuffer.clearColor(Magnum::Color4{0.2f, 0.3f, 0.3f, 1.0f});
 
     /* TODO: Add your drawing code here */
 
