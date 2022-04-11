@@ -1,0 +1,6 @@
+if(WITH_BASE_PROJECT)
+    add_subdirectory(base-project)
+endif()
+if(WITH_BASE_PROJECT)
+    add_subdirectory(triangle)
+endif()

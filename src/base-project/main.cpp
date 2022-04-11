@@ -24,7 +24,6 @@ MyApplication::MyApplication(const Arguments& arguments):
 }
 
 void MyApplication::drawEvent() {
-    Magnum::Color4 deneme{};
     GL::defaultFramebuffer.clearColor(Magnum::Color4{0.2f, 0.3f, 0.3f, 1.0f});
 
     /* TODO: Add your drawing code here */
