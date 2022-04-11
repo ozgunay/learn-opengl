@@ -5,9 +5,10 @@
 #include <Magnum/Math/Color.h>
 #include <Magnum/Math/Matrix3.h>
 #include <Magnum/Platform/GLContext.h>
-#include <Magnum/Shaders/VertexColorGL.h>
 #include <Magnum/GL/DefaultFramebuffer.h>
 #include <Magnum/Platform/GlfwApplication.h>
+
+#include "MyShader.h"
 
 using namespace Magnum;
 
@@ -18,7 +19,7 @@ class MyApplication: public Platform::Application {
     private:
         void drawEvent() override;
         GL::Mesh _mesh;
-        Shaders::VertexColorGL3D _shader;
+        MyShader _shader;
 };
 
 MyApplication::MyApplication(const Arguments& arguments):
@@ -37,7 +38,7 @@ MyApplication::MyApplication(const Arguments& arguments):
 
     _mesh.setCount(Containers::arraySize(vertices))
         .addVertexBuffer(vertexBuffer, 0,
-            Shaders::VertexColorGL3D::Position{});
+            MyShader::Position{});
 }
 
 void MyApplication::drawEvent() {
