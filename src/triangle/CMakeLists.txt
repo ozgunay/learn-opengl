@@ -27,7 +27,7 @@ find_package(Magnum REQUIRED
 
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
-add_executable(triangle WIN32 
+add_executable(triangle 
     main.cpp
     MyShader.h
     MyShader.cpp)

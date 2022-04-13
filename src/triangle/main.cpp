@@ -3,6 +3,7 @@
 #include <Magnum/GL/Mesh.h>
 #include <Magnum/GL/Version.h>
 #include <Magnum/Math/Color.h>
+#include <Magnum/GL/Renderer.h>
 #include <Magnum/Math/Matrix3.h>
 #include <Magnum/Platform/GLContext.h>
 #include <Magnum/GL/DefaultFramebuffer.h>
@@ -28,17 +29,42 @@ MyApplication::MyApplication(const Arguments& arguments):
         .setWindowFlags(Configuration::WindowFlag::Resizable)
         .setSize({800, 600}),
     GLConfiguration{}.setVersion(GL::Version::GL330) } {
-    /* TODO: Add your initialization code here */
+
+
     const Vector3 vertices[]{
-    {-0.5f, -0.5f, 0.0f},
-    { 0.5f, -0.5f, 0.0f},
-    { 0.0f,  0.5f, 0.0f}
+        {-0.5f, -0.5f, 0.0f},
+        { 0.5f, -0.5f, 0.0f},
+        { 0.0f,  0.5f, 0.0f}
     };
+
     GL::Buffer vertexBuffer{ vertices };
 
     _mesh.setCount(Containers::arraySize(vertices))
         .addVertexBuffer(vertexBuffer, 0,
             MyShader::Position{});
+
+    //// Draw a rectangle with EBO
+    //const Vector3 verticesRect[] = {
+    //    {0.5f,  0.5f, 0.0f},  // top right
+    //    {0.5f, -0.5f, 0.0f},  // bottom right
+    //    {-0.5f, -0.5f, 0.0f},  // bottom left
+    //    {-0.5f,  0.5f, 0.0f}   // top left 
+    //};
+    //const UnsignedInt indices[]{
+    //    0, 1, 3,
+    //    1, 2, 3
+    //};
+
+    //GL::Buffer vertexBufferRec{ verticesRect };
+
+    //_mesh.setCount(Containers::arraySize(indices))
+    //    .addVertexBuffer(vertexBufferRec, 0,
+    //        MyShader::Position{})
+    //    .setIndexBuffer(GL::Buffer{ indices }, 0,
+    //        GL::MeshIndexType::UnsignedInt);
+    ////Wireframe mode
+    //GL::Renderer::setFaceCullingMode(GL::Renderer::PolygonFacing::FrontAndBack);
+    //GL::Renderer::setPolygonMode(GL::Renderer::PolygonMode::Line);
 }
 
 void MyApplication::drawEvent() {
