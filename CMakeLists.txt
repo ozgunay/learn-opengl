@@ -43,5 +43,6 @@ include(CMakeDependentOption)
 
 option(WITH_BASE_PROJECT "Build base project" ON)
 option(WITH_TRIANGLE_EXAMPLE "Build triangle example" ON)
+option(WITH_SHADERS_EXAMPLE "Build shaders example" ON)
 
 add_subdirectory(src)
