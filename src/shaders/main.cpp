@@ -30,31 +30,36 @@ MyApplication::MyApplication(const Arguments& arguments):
         .setSize({800, 600}),
     GLConfiguration{}.setVersion(GL::Version::GL330) } {
 
+    struct QuadVertex {
+        Vector3 position;
+        Vector3 colors;
+    };
 
-    const Vector3 vertices[]{
-        {-0.5f, -0.5f, 0.0f},
-        { 0.5f, -0.5f, 0.0f},
-        { 0.0f,  0.5f, 0.0f}
+    const QuadVertex vertices[]{
+        { {-0.5f, -0.5f, 0.0f }, { 1.0f, 0.0f, 0.0f } },
+        { { 0.5f, -0.5f, 0.0f }, { 0.0f, 1.0f, 0.0f } },
+        { { 0.0f,  0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f } }
     };
 
     GL::Buffer vertexBuffer{ vertices };
 
     _mesh.setCount(Containers::arraySize(vertices))
         .addVertexBuffer(vertexBuffer, 0,
-            MyShader::Position{});
+            MyShader::Position{},
+            MyShader::Color{});
 }
 
 void MyApplication::drawEvent() {
     GL::defaultFramebuffer.clearColor(Magnum::Color4{0.2f, 0.3f, 0.3f, 1.0f});
 
-    /* TODO: Add your drawing code here */
-    float timeValue = glfwGetTime();
-    float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
+    // Changing green color
+    //float timeValue = glfwGetTime();
+    //float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
 
-    _shader
-        .setColor({ 0.0f, greenValue, 0.0f, 1.0f })
-        .draw(_mesh);
-
+    //_shader
+    //    .setColor({ 0.0f, greenValue, 0.0f, 1.0f })
+    //    .draw(_mesh);
+    _shader.draw(_mesh);
     swapBuffers();
     redraw();
 }

@@ -10,21 +10,39 @@
 
 using namespace Magnum;
 
+//const std::string vertexShaderSource =
+//    "layout (location = 0) in vec3 aPos; // the position variable has attribute position 0\n"
+//    "out vec4 vertexColor; // specify a color output to the fragment shader\n"
+//    "void main()\n"
+//    "{\n"
+//        "gl_Position = vec4(aPos, 1.0); // see how we directly give a vec3 to vec4's constructor\n"
+//        "vertexColor = vec4(0.5, 0.0, 0.0, 1.0); // set the output variable to a dark-red color\n"
+//    "};\n";
+//
+//const std::string fragmantShaderSource =
+//    "out vec4 FragColor;\n"
+//    "uniform vec4 ourColor; // we set this variable in the OpenGL code.\n"
+//    "void main()\n"
+//    "{\n"
+//        "FragColor = ourColor;\n"
+//    "}\n";
+
 const std::string vertexShaderSource =
     "layout (location = 0) in vec3 aPos; // the position variable has attribute position 0\n"
-    "out vec4 vertexColor; // specify a color output to the fragment shader\n"
+    "layout (location = 1) in vec3 aColor; // the color variable has attribute position 1\n"
+    "out vec3 ourColor; // specify a color output to the fragment shader\n"
     "void main()\n"
     "{\n"
-        "gl_Position = vec4(aPos, 1.0); // see how we directly give a vec3 to vec4's constructor\n"
-        "vertexColor = vec4(0.5, 0.0, 0.0, 1.0); // set the output variable to a dark-red color\n"
+    "gl_Position = vec4(aPos, 1.0); // see how we directly give a vec3 to vec4's constructor\n"
+    "ourColor = aColor; // set ourColor to the input color we got from the vertex data\n"
     "};\n";
 
-const std::string fragmantShaderSource =
+    const std::string fragmantShaderSource =
     "out vec4 FragColor;\n"
-    "uniform vec4 ourColor; // we set this variable in the OpenGL code.\n"
+    "in vec3 ourColor;\n"
     "void main()\n"
     "{\n"
-        "FragColor = ourColor;\n"
+    "FragColor = vec4(ourColor, 1.0);\n"
     "}\n";
 
 MyShader::MyShader() {
