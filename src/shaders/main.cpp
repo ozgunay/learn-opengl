@@ -52,13 +52,6 @@ MyApplication::MyApplication(const Arguments& arguments):
 void MyApplication::drawEvent() {
     GL::defaultFramebuffer.clearColor(Magnum::Color4{0.2f, 0.3f, 0.3f, 1.0f});
 
-    // Changing green color
-    //float timeValue = glfwGetTime();
-    //float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
-
-    //_shader
-    //    .setColor({ 0.0f, greenValue, 0.0f, 1.0f })
-    //    .draw(_mesh);
     _shader.draw(_mesh);
     swapBuffers();
     redraw();

@@ -25,6 +25,7 @@ endif()
 add_subdirectory(${LIB_DIR}/glfw               EXCLUDE_FROM_ALL)
 add_subdirectory(${LIB_DIR}/corrade            EXCLUDE_FROM_ALL)
 add_subdirectory(${LIB_DIR}/magnum             EXCLUDE_FROM_ALL)
+add_subdirectory(${LIB_DIR}/magnum-plugins     EXCLUDE_FROM_ALL)
 
 #       GLWF
 list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_LIST_DIR}/lib/glfw")
@@ -35,8 +36,11 @@ set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 
 #       magnum
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
+set(MAGNUM_PLUGINS_DIR lib/magnum-plugins)
 
-set(WITH_GLFWAPPLICATION   ON CACHE BOOL "" FORCE)
+set(WITH_GLFWAPPLICATION    ON CACHE BOOL "" FORCE)
+set(WITH_ANYIMAGEIMPORTER   ON CACHE BOOL "" FORCE)
+set(WITH_STBIMAGEIMPORTER   ON CACHE BOOL "" FORCE)
 
 
 include(CMakeDependentOption)
@@ -44,5 +48,6 @@ include(CMakeDependentOption)
 option(WITH_BASE_PROJECT "Build base project" ON)
 option(WITH_TRIANGLE_EXAMPLE "Build triangle example" ON)
 option(WITH_SHADERS_EXAMPLE "Build shaders example" ON)
+option(WITH_TEXTURES_EXAMPLE "Build textures example" ON)
 
 add_subdirectory(src)
