@@ -34,6 +34,7 @@ private:
     MyShader _shader;
     GL::Texture2D _texture;
     GL::Texture2D _smileTexture;
+    std::vector<Vector3> _cubePositions;
 };
 
 MyApplication::MyApplication(const Arguments& arguments) :
@@ -94,6 +95,19 @@ MyApplication::MyApplication(const Arguments& arguments) :
         {{-0.5f,  0.5f, -0.5f},  {0.0f, 1.0f}}
     };
 
+    _cubePositions = {
+        {0.0f,  0.0f,  0.0f},
+        {2.0f,  5.0f, -15.0f},
+        {-1.5f, -2.2f, -2.5f},
+        {-3.8f, -2.0f, -12.3f},
+        {2.4f, -0.4f, -3.5f},
+        {-1.7f,  3.0f, -7.5f},
+        {1.3f, -2.0f, -2.5f},
+        {1.5f,  2.0f, -2.5f},
+        {1.5f,  0.2f, -1.5f},
+        {-1.3f,  1.0f, -1.5}
+    };
+
     PluginManager::Manager<Trade::AbstractImporter> manager;
     Containers::Pointer<Trade::AbstractImporter> importer =
         manager.loadAndInstantiate("TgaImporter");
@@ -142,10 +156,14 @@ void MyApplication::drawEvent() {
     GL::defaultFramebuffer.clearColor(Magnum::Color4{ 0.2f, 0.3f, 0.3f, 1.0f }).
         clear(GL::FramebufferClear::Depth);
 
-     Matrix4 model = Matrix4::rotation(Math::Rad(static_cast<float>(glfwGetTime()) * 50.0_degf), Vector3{0.5f, 1.0f, 0.0f}.normalized());
-    _shader.setModel(model);
-
-    _shader.draw(_mesh);
+    for (auto i = 0; i < _cubePositions.size(); i++)
+    {
+        float angle = 20.0f * i;
+        Matrix4 model = Matrix4::translation(_cubePositions[i]) * 
+            Matrix4::rotation(Math::Rad(angle), Vector3{ 1.0f, 0.3f, 0.5f }.normalized());
+        _shader.setModel(model);
+        _shader.draw(_mesh);
+    }
     swapBuffers();
     redraw();
 }
