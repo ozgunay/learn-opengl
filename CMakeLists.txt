@@ -50,5 +50,6 @@ option(WITH_TRIANGLE_EXAMPLE "Build triangle example" ON)
 option(WITH_SHADERS_EXAMPLE "Build shaders example" ON)
 option(WITH_TEXTURES_EXAMPLE "Build textures example" ON)
 option(WITH_TRANSFORMATIONS_EXAMPLE "Build transformations example" ON)
+option(WITH_COORDINATE_SYSTEMS_EXAMPLE "Build coordinate systems example" ON)
 
 add_subdirectory(src)
