@@ -43,6 +43,8 @@ MyApplication::MyApplication(const Arguments& arguments) :
         .setSize({800, 600}),
     GLConfiguration{}.setVersion(GL::Version::GL330) } {
 
+    GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
+
     struct QuadVertex {
         Vector3 position;
         Vector2 textureCoord;
@@ -137,7 +139,8 @@ MyApplication::MyApplication(const Arguments& arguments) :
 }
 
 void MyApplication::drawEvent() {
-    GL::defaultFramebuffer.clearColor(Magnum::Color4{ 0.2f, 0.3f, 0.3f, 1.0f });
+    GL::defaultFramebuffer.clearColor(Magnum::Color4{ 0.2f, 0.3f, 0.3f, 1.0f }).
+        clear(GL::FramebufferClear::Depth);
 
      Matrix4 model = Matrix4::rotation(Math::Rad(static_cast<float>(glfwGetTime()) * 50.0_degf), Vector3{0.5f, 1.0f, 0.0f}.normalized());
     _shader.setModel(model);
