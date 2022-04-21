@@ -150,11 +150,30 @@ MyApplication::MyApplication(const Arguments& arguments) :
     _shader.setProjection(projection);
 
     _shader.bindTexture(_texture, _smileTexture);
+
+    //Vector3 cameraPos{ 0.0f, 0.0f, 3.0f };
+    //Vector3 cameraTarget{ 0.0f, 0.0f, 0.0f };
+    //Vector3 cameraDirection = (cameraPos - cameraTarget).normalized();
+    //Vector3 up{ 0.0f, 1.0f, 0.0f };
+    //Vector3 cameraRight = Math::cross(up, cameraDirection).normalized();
+    //Vector3 cameraUp = Math::cross(cameraDirection, cameraRight);
+
 }
 
 void MyApplication::drawEvent() {
     GL::defaultFramebuffer.clearColor(Magnum::Color4{ 0.2f, 0.3f, 0.3f, 1.0f }).
         clear(GL::FramebufferClear::Depth);
+
+    const float radius = 10.0f;
+    float camX = sin(glfwGetTime()) * radius;
+    float camZ = cos(glfwGetTime()) * radius;
+    
+    Matrix4 view = Matrix4::lookAt(
+        Vector3{ camX, 0.0, camZ },
+        Vector3{ 0.0, 0.0, 0.0 },
+        Vector3{ 0.0, 1.0, 0.0 }).invertedRigid();
+
+    _shader.setView(view);
 
     for (auto i = 0; i < _cubePositions.size(); i++)
     {
