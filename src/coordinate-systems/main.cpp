@@ -4,6 +4,7 @@
 #include <Corrade/PluginManager/Manager.h>
 #include <Magnum/Magnum.h>
 #include <Magnum/GL/Mesh.h>
+#include <Magnum/Timeline.h>
 #include <Magnum/ImageView.h>
 #include <Magnum/GL/Buffer.h>
 #include <Magnum/GL/Version.h>
@@ -21,8 +22,18 @@
 
 #include "MyShader.h"
 
+#include <iostream>
+
 using namespace Magnum;
 using namespace Math::Literals;
+
+namespace {
+    Float lastX = 400.f, lastY = 300.f;
+    constexpr Float sensitivity = 0.001f;
+    Float pitch{0.0f};
+    Float yaw{-90.0f};
+    bool firstMouse{ true };
+}
 
 class MyApplication : public Platform::Application {
 public:
@@ -30,11 +41,24 @@ public:
 
 private:
     void drawEvent() override;
+    void mousePressEvent(MouseEvent& event) override;
+    void mouseReleaseEvent(MouseEvent& event) override;
+    void mouseMoveEvent(MouseMoveEvent& event) override;
+    void mouseScrollEvent(MouseScrollEvent& event) override;
+    void keyPressEvent(KeyEvent& event) override;
+    void keyReleaseEvent(KeyEvent& event) override;
+
     GL::Mesh _mesh;
     MyShader _shader;
     GL::Texture2D _texture;
     GL::Texture2D _smileTexture;
     std::vector<Vector3> _cubePositions;
+    Vector3 _cameraPos{ 0.0f, 0.0f, 3.0f };
+    Vector3 _cameraFront{ 0.0f, 0.0f, -1.0f };
+    Vector3 _cameraUp{ 0.0f, 1.0f, 0.0f };
+    float _deltaTime{0.0f};
+    Timeline _timeline;
+    Float _fov{45.0f};
 };
 
 MyApplication::MyApplication(const Arguments& arguments) :
@@ -151,27 +175,21 @@ MyApplication::MyApplication(const Arguments& arguments) :
 
     _shader.bindTexture(_texture, _smileTexture);
 
-    //Vector3 cameraPos{ 0.0f, 0.0f, 3.0f };
-    //Vector3 cameraTarget{ 0.0f, 0.0f, 0.0f };
-    //Vector3 cameraDirection = (cameraPos - cameraTarget).normalized();
-    //Vector3 up{ 0.0f, 1.0f, 0.0f };
-    //Vector3 cameraRight = Math::cross(up, cameraDirection).normalized();
-    //Vector3 cameraUp = Math::cross(cameraDirection, cameraRight);
-
+    setCursor(Cursor::HiddenLocked);
+    _timeline.start();
 }
 
 void MyApplication::drawEvent() {
     GL::defaultFramebuffer.clearColor(Magnum::Color4{ 0.2f, 0.3f, 0.3f, 1.0f }).
         clear(GL::FramebufferClear::Depth);
 
-    const float radius = 10.0f;
-    float camX = sin(glfwGetTime()) * radius;
-    float camZ = cos(glfwGetTime()) * radius;
+    Matrix4 projection = Matrix4::perspectiveProjection(Math::Deg(_fov), (800.0f / 600.0f), 0.1f, 100.0f);
+    _shader.setProjection(projection);
     
     Matrix4 view = Matrix4::lookAt(
-        Vector3{ camX, 0.0, camZ },
-        Vector3{ 0.0, 0.0, 0.0 },
-        Vector3{ 0.0, 1.0, 0.0 }).invertedRigid();
+        _cameraPos, _cameraPos + _cameraFront, _cameraUp).invertedRigid();
+
+    _deltaTime = _timeline.previousFrameDuration();
 
     _shader.setView(view);
 
@@ -185,6 +203,112 @@ void MyApplication::drawEvent() {
     }
     swapBuffers();
     redraw();
+    _timeline.nextFrame();
 }
+
+void MyApplication::mousePressEvent(MouseEvent& event) {
+    if (event.button() != MouseEvent::Button::Left) return;
+
+    event.setAccepted();
+}
+
+void MyApplication::mouseReleaseEvent(MouseEvent& event) {
+
+    event.setAccepted();
+    redraw();
+}
+
+void MyApplication::mouseMoveEvent(MouseMoveEvent& event) {
+
+    if (firstMouse)
+    {
+        lastX = event.position().x();
+        lastY = event.position().y();
+        firstMouse = false;
+    }
+
+    float xoffset = event.position().x() - lastX;
+    float yoffset = lastY - event.position().y(); // reversed since y-coordinates range from bottom to top
+
+    lastX = event.position().x();
+    lastY = event.position().y();
+
+    xoffset *= sensitivity;
+    yoffset *= sensitivity;
+
+    yaw += xoffset;
+    pitch += yoffset;
+
+    if (pitch > 89.0f)
+        pitch = 89.0f;
+    if (pitch < -89.0f)
+        pitch = -89.0f;
+
+    Vector3 direction{
+        Math::cos(Math::Rad(yaw)) * Math::cos(Math::Rad(pitch)),
+        Math::sin(Math::Rad(pitch)),
+        Math::sin(Math::Rad(yaw)) * cos(Math::Rad(pitch))
+    };
+
+    _cameraFront = direction.normalized();
+
+
+    redraw();
+}
+
+void MyApplication::keyPressEvent(KeyEvent& event) {
+    float cameraSpeed = 10.0f * _deltaTime;
+    if (event.key() == KeyEvent::Key::W) {
+        _cameraPos += cameraSpeed * _cameraFront;
+
+    }
+    else if (event.key() == KeyEvent::Key::S) {
+        _cameraPos -= cameraSpeed * _cameraFront;
+
+    }
+    else if (event.key() == KeyEvent::Key::A) {
+        _cameraPos -= Math::cross(_cameraFront, _cameraUp).normalized() * cameraSpeed;
+
+    }
+    else if (event.key() == KeyEvent::Key::D) {
+        _cameraPos += Math::cross(_cameraFront, _cameraUp).normalized() * cameraSpeed;
+
+    }
+    else return;
+
+    event.setAccepted();
+    redraw();
+}
+
+void MyApplication::mouseScrollEvent(MouseScrollEvent& event)
+{
+    _fov -= event.offset().y();
+    if (_fov < 1.0f)
+        _fov = 1.0f;
+    if (_fov > 45.0f)
+        _fov = 45.0f;
+
+    std::cout << "FOV: " << _fov << "\n";
+}
+
+void MyApplication::keyReleaseEvent(KeyEvent& event) {
+    /*if (event.key() == KeyEvent::Key::Up || event.key() == KeyEvent::Key::Down) {
+        _mainCameraVelocity.z() = 0.0f;
+
+    }
+    else if (event.key() == KeyEvent::Key::PageDown || event.key() == KeyEvent::Key::PageUp) {
+        _mainCameraVelocity.y() = 0.0f;
+
+    }
+    else if (event.key() == KeyEvent::Key::Right || event.key() == KeyEvent::Key::Left) {
+        _mainCameraVelocity.x() = 0.0f;
+
+    }
+    else return;
+
+    event.setAccepted();
+    redraw();*/
+}
+
 
 MAGNUM_APPLICATION_MAIN(MyApplication)
